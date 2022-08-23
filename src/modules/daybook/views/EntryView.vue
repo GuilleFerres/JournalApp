@@ -1,40 +1,90 @@
 <template>
-  <div class="entry-title d-flex justify-content-between p-2">
-      <div>
-          <span class="text-success fs-3 fw-bold">22</span>
-          <span class="mx-1 fs-3">Agosto</span>
-          <span class="mx-2 fs-4 fw-light">2022, lunes</span>
-      </div>
+    <template v-if="entry">
+        <div class="entry-title d-flex justify-content-between p-2">
+            <div>
+                <span class="text-success fs-3 fw-bold">{{ day }}</span>
+                <span class="mx-1 fs-3">{{ month }}</span>
+                <span class="mx-2 fs-4 fw-light">{{ yearDay }}</span>
+            </div>
 
-      <div>
-          <button class="btn btn-danger mx-2">
-              Borrar
-              <i class="fa fa-trash-alt"></i>
-          </button>
-          <button class="btn btn-primary">
-              Subir foto
-              <i class="fa fa-upload"></i>
-          </button>
-      </div>
-  </div>
-  <hr>
-  <div class="d-flex flex-column px-3 h-75">
-      <textarea v-model="message" placeholder="¿Qué sucedió hoy?">
-      </textarea>
-  </div>
-  <FActionBtn 
+            <div>
+                <button class="btn btn-danger mx-2">
+                    Borrar
+                    <i class="fa fa-trash-alt"></i>
+                </button>
+                <button class="btn btn-primary">
+                    Subir foto
+                    <i class="fa fa-upload"></i>
+                </button>
+            </div>
+        </div>
+        <hr>
+        <div class="d-flex flex-column px-3 h-75">
+            <textarea
+                    v-model="entry.text"
+                    placeholder="¿Qué sucedió hoy?">
+            </textarea>
+        </div>
+        
+        <img src="https://mott.pe/noticias/wp-content/uploads/2018/03/C%C3%B3mo-lograr-fotos-con-profundidad-de-campo-usando-cualquier-c%C3%A1mara-profundidad2.jpg" 
+            alt="entry-picture"
+            class="img-thumbnail">
+    </template>
+    <FActionBtn 
     icon="fa-save"/>
-  <img src="https://mott.pe/noticias/wp-content/uploads/2018/03/C%C3%B3mo-lograr-fotos-con-profundidad-de-campo-usando-cualquier-c%C3%A1mara-profundidad2.jpg" 
-       alt="entry-picture"
-       class="img-thumbnail">
 </template>
 
 <script>
-import { defineAsyncComponent } from 'vue';
+import { defineAsyncComponent } from 'vue'
+import { mapGetters } from 'vuex' // computed
+
+import getDayMonthYear from "../helpers/getDaymonthYear"
 
 export default {
+    props: {
+        id: {
+            type: String,
+            required: true
+        }
+    },
     components: {
         FActionBtn: defineAsyncComponent(() => import('../components/FActionBtn.vue'))
+    },
+    data() {
+        return {
+            entry: null
+        }
+    },
+    computed: {
+        ...mapGetters('journal', ['getEntriesById']),
+        day() {
+            const { day } = getDayMonthYear( this.entry.date )
+            return day
+        },
+        month() {
+            const { month } = getDayMonthYear( this.entry.date )
+            return month
+        },
+        yearDay() {
+            const { yearDay } = getDayMonthYear( this.entry.date )
+            return yearDay
+        }
+    },
+    methods: {
+        loadEntry() {
+           const entry = this.getEntriesById( this.id )
+           if( !entry ) return this.$router.push({ name: 'no-entry' })
+
+           this.entry = entry
+        }
+    },
+    created() {
+        this.loadEntry()
+    },
+    watch: {
+        id() {
+            this.loadEntry()
+        }
     }
 }
 </script>

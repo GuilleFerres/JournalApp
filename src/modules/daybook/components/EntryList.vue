@@ -7,6 +7,15 @@
         placeholder="Buscar entrada"
         v-model="term">
     </div>
+    <div>
+      <div class="mt-2 d-flex flex-column">
+        <button class="btn btn-primary mx-3"
+                @click="$router.push({ name: 'entry', params: { id: 'new' } })">
+          <i class="fa fa-plus-circle"></i>
+          Nueva entrada
+        </button>
+      </div>
+    </div>
     <div class="entry-scrollarea">
       <Entry-data
         v-for="entry in entriesByTerm"

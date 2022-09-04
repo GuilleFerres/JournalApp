@@ -6,7 +6,7 @@ import daybookRouter from '@/modules/daybook/router'
 const routes = [
   {
     path: '/',
-    name: 'home',
+    name: 'Home',
     component: HomeView
   },
   {
